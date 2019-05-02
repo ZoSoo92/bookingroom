@@ -4,14 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.roombooking.booking.service.UtenteDAO;
 import it.roombooking.booking.model.Utente;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -20,8 +17,7 @@ public class UtenteCtrl {
 
     @Autowired
     UtenteDAO utenteDAO;
-    @Autowired
-    ObjectMapper mapper;
+
 
     /* SAVE Utente */
     @PostMapping("/utente")

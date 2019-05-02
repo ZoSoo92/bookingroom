@@ -1,23 +1,18 @@
 package it.roombooking.booking.controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.roombooking.booking.model.Prenotazione;
-import it.roombooking.booking.model.Utente;
 import it.roombooking.booking.service.PrenotazioneDAO;
-import org.apache.tomcat.util.digester.ArrayStack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import javax.xml.crypto.Data;
+
 
 @RestController
 @RequestMapping("/api")
@@ -26,18 +21,14 @@ public class PrenotazioneCtrl implements Serializable {
     @Autowired
     PrenotazioneDAO prenotazioneDAO;
 
-    /* GET All Utente */
+    /* GET All Bookings */
     @GetMapping("/booking")
     public List<Prenotazione> getAllBooking(){
         List<Prenotazione> pt=prenotazioneDAO.findAll();
         return pt;
     }
-    /*
-    public ResponseEntity<List<Prenotazione>> getAllBooking(){
-        List<Prenotazione> pt=prenotazioneDAO.findAll();
-        return new ResponseEntity<List<Prenotazione>>(pt, HttpStatus.OK);
-    }*/
-    /* GET Utente BY ID*/
+
+    /* GET booking BY ID*/
     //JSON FORMATTATO CON HashMap
     @GetMapping("/booking/{id}")
     public Map<String, String> getUtenteById(@PathVariable(value = "id") Long pdId) {
@@ -67,6 +58,27 @@ public class PrenotazioneCtrl implements Serializable {
         Prenotazione pt = prenotazioneDAO.findOne(ptId);
         return new ResponseEntity<Prenotazione>(pt,HttpStatus.OK);
 
+    }
+
+    /* UPDATE book */
+    @PutMapping("/booking/{id}")
+    public ResponseEntity<Prenotazione> updateRoom(@PathVariable(value = "id") Long ptId, @Valid @RequestBody Prenotazione ptDetails){
+        Prenotazione pt = prenotazioneDAO.findOne(ptId);
+        if(pt==null){ResponseEntity.notFound().build();}
+        pt.setData(ptDetails.getData());
+        pt.setUtente(ptDetails.getUtente());
+        pt.setStanza(ptDetails.getStanza());
+        Prenotazione ptUp = prenotazioneDAO.save(pt);
+        return ResponseEntity.ok().body(ptUp);
+    }
+
+    /* DELETE Book */
+    @DeleteMapping("/booking/{id}")
+    public ResponseEntity<Prenotazione> deleteBooking(@PathVariable(value="id")Long bookId){
+        Prenotazione book=prenotazioneDAO.findOne(bookId);
+        if(book == null){ return ResponseEntity.notFound().build();}
+        prenotazioneDAO.Delete(book);
+        return ResponseEntity.ok().build();
     }
 
 }
