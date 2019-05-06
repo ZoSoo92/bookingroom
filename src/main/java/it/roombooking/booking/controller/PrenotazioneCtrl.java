@@ -1,12 +1,12 @@
 package it.roombooking.booking.controller;
 
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import it.roombooking.booking.model.Prenotazione;
 import it.roombooking.booking.service.PrenotazioneDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -65,11 +65,20 @@ public class PrenotazioneCtrl implements Serializable {
     public ResponseEntity<Prenotazione> updateRoom(@PathVariable(value = "id") Long ptId, @Valid @RequestBody Prenotazione ptDetails){
         Prenotazione pt = prenotazioneDAO.findOne(ptId);
         if(pt==null){ResponseEntity.notFound().build();}
-        pt.setData(ptDetails.getData());
-        pt.setUtente(ptDetails.getUtente());
-        pt.setStanza(ptDetails.getStanza());
-        Prenotazione ptUp = prenotazioneDAO.save(pt);
-        return ResponseEntity.ok().body(ptUp);
+        int flag=0;
+
+        flag = prenotazioneDAO.checkUpRecord(ptDetails);
+        if(flag == 111) {
+            //pt.setData(ptDetails.getData());
+            pt.setUtente(ptDetails.getUtente());
+            pt.setStanza(ptDetails.getStanza());
+            pt.setDataI(ptDetails.getDataI());
+            pt.setDataF(ptDetails.getDataF());
+            Prenotazione ptUp = prenotazioneDAO.save(pt);
+            return ResponseEntity.ok().body(ptUp);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     /* DELETE Book */
@@ -80,5 +89,12 @@ public class PrenotazioneCtrl implements Serializable {
         prenotazioneDAO.Delete(book);
         return ResponseEntity.ok().build();
     }
+/* GET JSON BOOKING BY Month*/
+    @GetMapping("/timeline/{mese}")
+    public List<Prenotazione> getTimelineByMonth(@PathVariable(value="mese") int mese){
+        return prenotazioneDAO.findByMonth(mese);
+    }
+
+
 
 }

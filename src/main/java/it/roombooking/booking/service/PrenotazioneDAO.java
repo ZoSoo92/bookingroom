@@ -5,6 +5,11 @@ import it.roombooking.booking.repository.PrenotazioneRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 @Service
@@ -31,10 +36,49 @@ public class PrenotazioneDAO {
         return prenotazioneRepo.getOne(pt);
     }
 
-    /* Delete prenotazione */
+    /* Delete single prenotazione */
 
     public void Delete(Prenotazione pt){
         prenotazioneRepo.delete(pt);
         return;
+    }
+
+    /* Get Prenotazione By month */
+    public List<Prenotazione> findByMonth(int i){
+
+        List<Prenotazione> pts= prenotazioneRepo.findAll();
+        List<Prenotazione> ptMonth= new ArrayList<>();
+        String patternMese = "MM";
+        DateFormat pM = new SimpleDateFormat(patternMese);
+        int j=0;
+
+        for(j=0;j<pts.size();j++){
+            if(Long.parseLong(pM.format(pts.get(j).getData())) == i)
+            {
+                ptMonth.add(pts.get(j));
+
+            }
+        }
+        for (j=0;j<ptMonth.size();j++)
+        {
+            System.out.println(" ptMo-->"+ptMonth.get(j).getData());
+        }
+        if(ptMonth == null)return null;
+        return ptMonth;
+    }
+
+/* Check data record for updating a new Room Booking */
+    public int checkUpRecord (Prenotazione ptDtl){
+        int flag=0;
+        List<Prenotazione> Pts= prenotazioneRepo.findAll();
+        for(Prenotazione pt : Pts) {
+            if(ptDtl.getDataI().after(pt.getDataI()) && ptDtl.getDataI().before(pt.getDataF()) ||
+                    ptDtl.getDataF().after(ptDtl.getDataI()) && ptDtl.getDataF().before(pt.getDataF())){
+                flag=666;
+            }
+        }
+        if(flag!=666)flag=111;
+        return  flag;
+
     }
 }
