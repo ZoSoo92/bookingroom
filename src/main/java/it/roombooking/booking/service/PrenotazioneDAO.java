@@ -53,7 +53,7 @@ public class PrenotazioneDAO {
         int j=0;
 
         for(j=0;j<pts.size();j++){
-            if(Long.parseLong(pM.format(pts.get(j).getData())) == i)
+            if(Long.parseLong(pM.format(pts.get(j).getDataI())) == i)
             {
                 ptMonth.add(pts.get(j));
 
@@ -70,15 +70,18 @@ public class PrenotazioneDAO {
 /* Check data record for updating a new Room Booking */
     public int checkUpRecord (Prenotazione ptDtl){
         int flag=0;
+        int i=0;
         List<Prenotazione> Pts= prenotazioneRepo.findAll();
         for(Prenotazione pt : Pts) {
-            if(ptDtl.getDataI().after(pt.getDataI()) && ptDtl.getDataI().before(pt.getDataF()) ||
-                    ptDtl.getDataF().after(ptDtl.getDataI()) && ptDtl.getDataF().before(pt.getDataF())){
+            if(pt.getDataI()==null || ptDtl.getDataI()==null){return flag;}
+            if(ptDtl.getDataI().after(pt.getDataI()) && ptDtl.getDataI().before(pt.getDataF()) || ptDtl.getDataI().equals(pt.getDataI()) && ptDtl.getDataF().equals(pt.getDataF())){
+                flag=666;
+            }
+            if(ptDtl.getDataF().after(pt.getDataI()) && ptDtl.getDataF().before(pt.getDataF()) || ptDtl.getDataI().equals(pt.getDataI()) && ptDtl.getDataF().equals(pt.getDataF())){
                 flag=666;
             }
         }
         if(flag!=666)flag=111;
         return  flag;
-
     }
 }

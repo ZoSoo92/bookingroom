@@ -65,10 +65,7 @@ public class PrenotazioneCtrl implements Serializable {
     public ResponseEntity<Prenotazione> updateRoom(@PathVariable(value = "id") Long ptId, @Valid @RequestBody Prenotazione ptDetails){
         Prenotazione pt = prenotazioneDAO.findOne(ptId);
         if(pt==null){ResponseEntity.notFound().build();}
-        int flag=0;
 
-        flag = prenotazioneDAO.checkUpRecord(ptDetails);
-        if(flag == 111) {
             //pt.setData(ptDetails.getData());
             pt.setUtente(ptDetails.getUtente());
             pt.setStanza(ptDetails.getStanza());
@@ -76,8 +73,26 @@ public class PrenotazioneCtrl implements Serializable {
             pt.setDataF(ptDetails.getDataF());
             Prenotazione ptUp = prenotazioneDAO.save(pt);
             return ResponseEntity.ok().body(ptUp);
-        }
 
+    }
+
+    /* POST NEW BOOK */
+    @PostMapping("/booking/")
+    public ResponseEntity<Prenotazione> updateRoom(@Valid @RequestBody Prenotazione ptDetails){
+        int flag=0;
+        System.out.println("INIT....");
+        System.out.println("Id"+ptDetails.getId()+"\nData"+ptDetails.getData()+"\nDataI"+ptDetails.getDataI()+"\nDataF"+ptDetails.getDataF());
+        Date Prova=new Date();
+        Prova= ptDetails.getData();
+        System.out.println(Prova);
+        System.out.println("DATA GET By JSON.");
+
+        flag = prenotazioneDAO.checkUpRecord(ptDetails);
+        if(flag == 111) {
+            prenotazioneDAO.save(ptDetails);
+            return ResponseEntity.ok().body(ptDetails);
+        }
+        System.out.println("by CTRL-->"+flag);
         return ResponseEntity.notFound().build();
     }
 
@@ -89,7 +104,7 @@ public class PrenotazioneCtrl implements Serializable {
         prenotazioneDAO.Delete(book);
         return ResponseEntity.ok().build();
     }
-/* GET JSON BOOKING BY Month*/
+    /* GET JSON BOOKING BY Month */
     @GetMapping("/timeline/{mese}")
     public List<Prenotazione> getTimelineByMonth(@PathVariable(value="mese") int mese){
         return prenotazioneDAO.findByMonth(mese);
